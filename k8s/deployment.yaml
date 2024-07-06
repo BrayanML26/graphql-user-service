@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: graphql-user-service
-        image: gcr.io/pure-pact-428603-e7/graphql-user-service:latest
+        image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/graphql-user-service:latest
         ports:
         - containerPort: 3000
         env:
