@@ -1,0 +1,31 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v0.2.0
+      with:
+        project_id: ${{ secrets.GCP_PROJECT_ID }}
+        service_account_key: ${{ secrets.GCP_SA_KEY }}
+        export_default_credentials: true
+
+    - name: Configure Docker
+      run: gcloud auth configure-docker
+
+    - name: Build and Push Docker image
+      run: |
+        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/graphql-user-service:${{ github.sha }} .
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/graphql-user-service:${{ github.sha }}
+
+    - name: Deploy to GKE
+      run: |
+        gcloud container clusters get-credentials netsjs-cluster --zone us-central1-a
+        kubectl set image deployment/graphql-user-service graphql-user-service=gcr.io/${{ secrets.GCP_PROJECT_ID }}/graphql-user-service:${{ github.sha }}
