@@ -47,5 +47,5 @@ jobs:
 
     - name: Deploy to GKE
       run: |
-        gcloud container clusters get-credentials netsjs-cluster --us-central1
+        gcloud container clusters get-credentials netsjs-cluster --zone=us-central1 --project=${{ secrets.GCP_PROJECT_ID }}
         kubectl set image deployment/graphql-user-service graphql-user-service=$IMAGE_NAME:$GITHUB_SHA
