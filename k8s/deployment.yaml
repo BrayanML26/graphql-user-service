@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graphql-user-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: graphql-user-service
+  template:
+    metadata:
+      labels:
+        app: graphql-user-service
+    spec:
+      containers:
+      - name: graphql-user-service
+        image: gcr.io/pure-pact-428603-e7/graphql-user-service:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DB_HOST
+          value: postgres-service
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-secrets
+              key: username
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secrets
+              key: password
+        - name: DB_NAME
+          value: userdb
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
