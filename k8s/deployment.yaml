@@ -18,26 +18,21 @@ spec:
         ports:
         - containerPort: 3000
         env:
-        - name: DB_HOST
-          value: postgres-service
-        - name: DB_PORT
-          value: "5432"
-        - name: DB_USERNAME
+        - name: DATABASE_URL
           valueFrom:
             secretKeyRef:
               name: db-secrets
-              key: username
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: db-secrets
-              key: password
-        - name: DB_NAME
-          value: userdb
-        resources:
-          requests:
-            cpu: 100m
-            memory: 128Mi
-          limits:
-            cpu: 500m
-            memory: 512Mi
+              key: database-url
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: graphql-user-service
+spec:
+  selector:
+    app: graphql-user-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
