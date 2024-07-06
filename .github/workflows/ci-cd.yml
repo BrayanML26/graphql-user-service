@@ -54,6 +54,13 @@ jobs:
     - name: Set up Cloud SDK
       run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
 
+    - name: Install gke-gcloud-auth-plugin
+      run: |
+        sudo apt-get update && sudo apt-get install -y apt-transport-https ca-certificates gnupg
+        echo "deb https://packages.cloud.google.com/apt gke-gcloud-auth-plugin main" | sudo tee /etc/apt/sources.list.d/gke-gcloud-auth-plugin.list
+        curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+        sudo apt-get update && sudo apt-get install -y gke-gcloud-auth-plugin
+
     - name: Configure Docker
       run: gcloud auth configure-docker
 
